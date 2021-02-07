@@ -9,26 +9,25 @@ Simple, one php file Frontend for Gammu-smsd
 
 - Edit the variables for script authentication.
 
-
 ## Features:
 
-- Out Box
+#### - Out Box
 
 Displays list of sent SMS. From the database "sentitems" table.
 
-- In Box
+#### - In Box
 
 Displays list of received SMS. From the database "inbox" table.
 
-- Conversations
+#### - Conversations
 
 Query join of the database "inbox" and "senditens" tables to display list of available conversations
 
-- Send SMS
+#### - Send SMS
 
 Form for sending SMS.
 
-- SMS Send API
+#### - SMS Send API
 
 Send sms from command line. Example: http://localhost/?do=api&token=your_token&phone=to_phone&message=your_message
 
