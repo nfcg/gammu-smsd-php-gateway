@@ -1,16 +1,16 @@
 # Gammu-smsd php-Gateway
 Simple, one php file Frontend for Gammu-smsd
 
-## Installation:
 
+## Installation:
 - Copy the index.php to the web server.
 
 - Edit the variables for database connection.
 
 - Edit the variables for script authentication.
 
-## Features:
 
+## Features:
 #### - Out Box
 
 Displays list of sent SMS. From the database "sentitems" table.
