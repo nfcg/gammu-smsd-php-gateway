@@ -1,4 +1,4 @@
-# gammu-smsd-gateway
+# Gammu-smsd php-Gateway
 Simple, one php file Frontend for Gammu-smsd
 
 ## Installation:
