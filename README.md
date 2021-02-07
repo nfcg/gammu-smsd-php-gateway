@@ -3,11 +3,12 @@ Simple, one php file Frontend for Gammu-smsd
 
 ## Installation:
 
-Copy the index.php to the web server.
+- Copy the index.php to the web server.
 
-Edit the variables for database connection.
+- Edit the variables for database connection.
 
-Edit the variables for script authentication.
+- Edit the variables for script authentication.
+
 
 ## Features:
 
@@ -15,7 +16,7 @@ Edit the variables for script authentication.
 
 Displays list of sent SMS. From the database "sentitems" table.
 
-In Box
+- In Box
 
 Displays list of received SMS. From the database "inbox" table.
 
