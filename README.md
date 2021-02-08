@@ -2,12 +2,14 @@
 Simple, "One Php File" Frontend for Gammu-smsd
 
 
+
 ## Installation:
 - Copy the index.php to the web server.
 
 - Edit the variables for database connection.
 
 - Edit the variables for script authentication.
+
 
 
 ## Features:
