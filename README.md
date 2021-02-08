@@ -1,5 +1,5 @@
 # Gammu-smsd php-Gateway
-Simple, one php file Frontend for Gammu-smsd
+Simple, "One Php File" Frontend for Gammu-smsd
 
 
 ## Installation:
