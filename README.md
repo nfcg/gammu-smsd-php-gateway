@@ -8,22 +8,26 @@ Simple, "One Php File" Frontend for Gammu-smsd
 
 - Edit the variables for database connection.
 
-- Edit the variables for script authentication.
+- Edit the variables for authentication.
 
 
 
 ## Features:
-#### - Out Box
+#### - Sent Box
 
 Displays list of sent SMS. From the database "sentitems" table.
 
 #### - In Box
 
-Displays list of received SMS. From the database "inbox" table.
+Displays list of sent SMS. From the database "inbox" table.
 
 #### - Conversations
 
 Query join of the database "inbox" and "senditens" tables to display list of available conversations
+
+#### - Out Box
+
+Displays list of OutBox (Queued For Delivery) SMS. From the database "outbox" table.
 
 #### - Send SMS
 
