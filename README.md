@@ -41,3 +41,19 @@ Send sms from command line. Example: http://localhost/?do=api&token=your_token&p
 
 Displays the smsd log file.
 
+
+
+## ScreenShots
+
+#### - Front Page
+![Screenshot](screenshots/front_page.png)
+#### - Sent Box
+![Screenshot](screenshots/sentbox.png)
+#### - In Box
+![Screenshot](screenshots/inbox.png)
+#### - Conversations
+![Screenshot](screenshots/conversation.png)
+#### - Log
+![Screenshot](screenshots/log.png)
+#### - Log In
+![Screenshot](screenshots/log_in.png)
