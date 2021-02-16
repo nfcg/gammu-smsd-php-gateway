@@ -23,7 +23,7 @@ Displays list of sent SMS. From the database "inbox" table.
 
 #### - Conversations
 
-Query join of the database "inbox" and "senditens" tables to display list of available conversations
+Query join of the database "inbox" and "senditens" tables to display list of available conversations.
 
 #### - Out Box
 
@@ -37,5 +37,7 @@ Form for sending SMS.
 
 Send sms from command line. Example: http://localhost/?do=api&token=your_token&phone=to_phone&message=your_message
 
+#### - Log
 
+Displays the smsd log file.
 
