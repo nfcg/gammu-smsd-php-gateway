@@ -1,6 +1,5 @@
 <?php
-/* Start Conf*/
-$host    = 'localhost';
+//////////////////////////////// * Start Conf * ////////////////////////////////
 $db      = 'smsd';
 $user    = 'smsd';
 $pass    = 'your_password'; // Please Change This
@@ -13,18 +12,29 @@ $your_number = '+351000000000'; // Please Change This
 
 $get_text = 'textutf8'; // text or textutf8
 
-$api_tokens = array("f5AOByZPMMws65YqJVkaVfjRSK6GqSYD", "K6BZLwBdslRpL8xobpRJHNc4q0wlzmEN");
+$log = '/var/log/smsd.log';
+$max_log_lines = '20';
+
+$api_tokens = array("f5AOByZPMMws65YqJVkaVfjRSK6GqSYD");
 
 $sort = 'asc'; // asc or desc
 
-$title = 'My SMS Gateway'; 
-$footer = 'Copyright © My SMS Gateway'; 
-/* End Conf*/
+$title = 'Gammu SMS Gateway'; 
+$footer = 'Copyright © Gammu SMS Gateway'; 
+//////////////////////////////// * End Conf * ////////////////////////////////
+
+
 
 $do = $_GET['do'];
 
+$do_array = array("inbox", "sent", "conversation", "view_conversation", "message", "send_message", "logout", "outbox", "api", "log", "del", null);
+$exclude_html = array("send_message", "view_conversation", "del");
+
+if (!in_array($do, $do_array)) { echo json_encode("Not Allowed"); exit(); }
+
 if ($do == "api") {
 $token = urldecode($_GET['token']);
+
 if (in_array($token, $api_tokens)) {
 
 $phone = nl2br($_GET['phone']); 
@@ -34,13 +44,13 @@ $message = escapeshellarg($_GET['message']);
 
 $send = shell_exec("gammu-smsd-inject TEXT $phone -unicode -$get_text $message").PHP_EOL;
 echo json_encode($send); exit();
+
 } else { echo json_encode("Not Allowed"); exit();}
 exit();
 }
 
-$exclude = array("send_message", "view_conversation");
-
 session_start();
+    
 $hash = md5('cxN4QtJ46bepic0p3pmWyyqPc7re0eHj'.$pass.'NcaR3CfhVM3xORcP0et2p0wwEPGMbNG5'); 
 
 function display_login_form(){
@@ -81,7 +91,7 @@ echo'
 </script>';
  } 
 
-if (!in_array($do, $exclude)) {
+if (!in_array($do, $exclude_html)) {
 echo '
 <!DOCTYPE html>
 <html lang="en">
@@ -89,31 +99,20 @@ echo '
       <title>'.$title.'</title>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-      
-	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
-	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">
-      
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">      
+	  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+	  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css">      
       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+      
       <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
-	<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
-
+	  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+	  <script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.23/js/dataTables.bootstrap4.min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<style>
+<style> </style>
 
-</style>
-
-<script>
-$(document).ready(function() {
-    $("#table").DataTable( {
-        "order": [[ 1, "'.$sort.'" ]]
-    } );
-} );
-</script>
+<script> $(document).ready(function() { $("#table").DataTable( { "order": [[ 1, "'.$sort.'" ]], stateSave: true } );} ); </script>
 
    </head>
    <body>
@@ -121,7 +120,7 @@ $(document).ready(function() {
          <h1 class="text-primary">'.$title.'</h1>
          <p class="text-white">Frontend for gammu-smsd</p>
       </header>
-      <nav class="navbar navbar-expand-md bg-dark navbar-dark sticky-top">
+      <nav class="navbar navbar-expand-md navbar-dark bg-primary sticky-top">
          <a class="navbar-brand" href="."><i class="fas fa-sms fa-lg"></i> '.$title.'</a>
          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
          <span class="navbar-toggler-icon"></span>
@@ -129,25 +128,28 @@ $(document).ready(function() {
          <div class="collapse navbar-collapse w-100" id="collapsibleNavbar">
             <ul class="navbar-nav mr-auto">
                <li class="nav-item">
-                  <a class="nav-link" href="?do=sent">Sent-Box</a>
-               </li>
+                  <a class="nav-link text-white" href="?do=sent">'; if ($do == "sent") {echo "<b>Sent-Box</b>";} else {echo "Sent-Box";}; echo '
+               </a></li>
                <li class="nav-item">
-                  <a class="nav-link" href="./?do=inbox">In-Box</a>
-               </li>
+                  <a class="nav-link text-white" href="./?do=inbox">'; if ($do == "inbox") {echo "<b>In-Box</b>";} else {echo "In-Box";}; echo '
+               </a></li>
                <li class="nav-item">
-                  <a class="nav-link" href="?do=conversation">Conversations</a>
-               </li>
+                  <a class="nav-link text-white" href="?do=conversation">'; if ($do == "conversation") {echo "<b>Conversations</b>";} else {echo "Conversations";}; echo '
+               </a></li>
                <li class="nav-item">
-                  <a class="nav-link" href="?do=message">Send-SMS</a>
-               </li> 
+                  <a class="nav-link text-white" href="?do=message">'; if ($do == "message") {echo "<b>Send-SMS</b>";} else {echo "Send-SMS";}; echo '
+               </a></li> 
                <li class="nav-item">
-                  <a class="nav-link" href="./?do=outbox">Out-Box</a>
-               </li>
+                  <a class="nav-link text-white" href="./?do=outbox">'; if ($do == "outbox") {echo "<b>Out-Box</b>";} else {echo "Out-Box";}; echo '
+               </a></li>
+               <li class="nav-item">
+                  <a class="nav-link text-white" href="./?do=log">'; if ($do == "log") {echo "<b>Log</b>";} else {echo "Log";}; echo '
+               </a></li>
             </ul>';
 if (isset($_SESSION['login']) && $_SESSION['login'] == $hash) {
       echo '<ul class="navbar-nav ml-auto">
                <li class="nav-item">
-                  <a class="nav-link" href="?do=logout"><i class="text-primary fas fa-sign-out-alt"></i> Log-Out</a>
+                  <a class="nav-link text-dark" href="?do=logout"><i class="text-danger fas fa-sign-out-alt"></i> Log-Out</a>
                </li>
             </ul>';
 }
@@ -162,6 +164,7 @@ $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_EMULATE_PREPARES => false,];
 
 switch ($do) {
+//////////////////////////////// * Start inbox * ////////////////////////////////
   case "inbox":
    try {$pdo = new PDO($dsn, $user, $pass, $options);
      $inbox = $pdo->query('SELECT * FROM inbox');
@@ -174,6 +177,7 @@ echo '
       <th>Number</th>
       <th>Date</th>
       <th>Message</th>
+      <th data-orderable="false">Delete</th>
    </tr>
 </thead>
 <tbody>';
@@ -183,7 +187,8 @@ echo '
       <tr>
         <td><i class="text-primary fas fa-mobile-alt"></i><a href="?do=message&phone='.$row['SenderNumber'].'">'.$row['SenderNumber'].'</a></td>
         <td><i class="text-primary fas fa-calendar-alt"></i> '.$row['ReceivingDateTime'].'</td>
-        <td><i class="text-primary fas fa-comment-alt"></i> '.nl2br($row['TextDecoded']).'</td>
+        <td><a href="?do=message&message='.urlencode($row['TextDecoded']).'"><i class="text-primary fas fa-comment-alt"></i></a> '.nl2br($row['TextDecoded']).'</td>
+        <td><a href="?do=del&table=inbox&id='.$row['ID'].'" title="delete" class="delete" onclick="return confirm('."'". 'Are you sure you want to delete this message' ."'".')"><i class="text-danger far fa-trash-alt"></i></a></td>
       </tr>';
 }        
 echo '
@@ -192,7 +197,7 @@ echo '
         
 } catch (\PDOException $e) {echo "Connection failed: " . $e->getMessage();}
     break;
-
+//////////////////////////////// * End inbox - Start sent * ////////////////////////////////
   case "sent":
    try {$pdo = new PDO($dsn, $user, $pass, $options);
      $sentitems = $pdo->query('SELECT * FROM sentitems');
@@ -205,6 +210,7 @@ echo '
       <th>Number</th>
       <th>Date</th>
       <th>Message</th>
+      <th data-orderable="false">Delete</th>
    </tr>
 </thead>
 <tbody>';
@@ -214,30 +220,26 @@ echo '
       <tr>
         <td><i class="text-primary fas fa-mobile-alt"></i><a href="?do=message&phone='.$row['DestinationNumber'].'">'.$row['DestinationNumber'].'</a></td>
         <td><i class="text-primary fas fa-calendar-alt"></i> '.$row['SendingDateTime'].'</td>
-        <td><i class="text-primary fas fa-comment-alt"></i> '.nl2br($row['TextDecoded']).'</td>
+        <td><a href="?do=message&message='.urlencode($row['TextDecoded']).'"><i class="text-primary fas fa-comment-alt"></i></a> '.nl2br($row['TextDecoded']).'</td>
+        <td><a href="?do=del&table=sentitems&id='.$row['ID'].'" title="delete" class="delete" onclick="return confirm('."'". 'Are you sure you want to delete this message' ."'".')"><i class="text-danger far fa-trash-alt"></i></a></td>
       </tr>';
 }        
 echo '
 </tbody>
-</table>';
-        
+</table>';        
 } catch (\PDOException $e) { echo "Connection failed: " . $e->getMessage();}
     break;
-
-  case "conversation":
+//////////////////////////////// * End sent - Start conversation * ////////////////////////////////
+ case "conversation":
    try {$pdo = new PDO($dsn, $user, $pass, $options);
      $chat = $pdo->query("SELECT DISTINCT DestinationNumber FROM sentitems;");
-echo"
-<script>
+echo"<script>
    $(document).ready(function(){
        $('#mySelect').on('change', function(event){
-           event.preventDefault();
-               
+           event.preventDefault();             
            var formValues= $(this).serialize();
-           var actionUrl = $(this).attr('action');
-    
+           var actionUrl = $(this).attr('action');    
            $.post(actionUrl, formValues, function(data){
-               // Display the returned data in browser
                $('#result').html(data);
            });
        });
@@ -259,21 +261,22 @@ echo'    </select>
   </div>
 </form>
 <div id="result">
-</div>';
-      
+</div>';      
 } catch (\PDOException $e) { echo "Connection failed: " . $e->getMessage();}
     break;
-
-  case "view_conversation":
+//////////////////////////////// * End conversation - Start view_conversation * ////////////////////////////////
+ case "view_conversation":
    $number = $_POST['number'];
    try {$pdo = new PDO($dsn, $user, $pass, $options);
-     $chat = $pdo->query("SELECT inbox.UpdatedInDB, inbox.ReceivingDateTime, inbox.SenderNumber, sentitems.DestinationNumber, inbox.TextDecoded FROM inbox, sentitems WHERE inbox.SenderNumber = '$number' AND sentitems.DestinationNumber = '$number' GROUP BY inbox.ReceivingDateTime UNION SELECT sentitems.UpdatedInDB, sentitems.SendingDateTime, sentitems.DestinationNumber, inbox.SenderNumber, sentitems.TextDecoded FROM sentitems, inbox  WHERE sentitems.DestinationNumber = '$number' AND inbox.SenderNumber = '$your_number' GROUP BY sentitems.SendingDateTime ORDER BY UpdatedInDB;");
+     $chat = $pdo->query("SELECT inbox.ReceivingDateTime as 'Date', inbox.SenderNumber as 'Number', inbox.TextDecoded FROM inbox WHERE inbox.SenderNumber = '$number' AND inbox.SenderNumber = '$number' UNION SELECT sentitems.SendingDateTime AS Date, CASE sentitems.DestinationNumber WHEN '$number' THEN '$your_number' END AS Number, TextDecoded FROM sentitems  WHERE sentitems.DestinationNumber = '$number' GROUP BY Date ORDER BY Date;");
 
 echo '
 <script>
 $(document).ready(function() {
     $("#table").DataTable( {
-        "order": [[ 1, "'.$sort.'" ]]
+        "order": [[ 1, "'.$sort.'" ]],
+        stateSave: true,
+        "searching": false
     } );
 } );
 </script>
@@ -291,31 +294,27 @@ $(document).ready(function() {
 foreach($chat as $row) {
 echo '
       <tr>
-        <td><i class="text-primary fas fa-mobile-alt"></i><a href="?do=message&phone='.$row['DestinationNumber'].'">'.$row['DestinationNumber'].'</a></td>
-        <td><i class="text-primary fas fa-calendar-alt"></i> '.$row['ReceivingDateTime'].'</td>
+        <td><i class="text-primary fas fa-mobile-alt"></i> <a href="?do=message&phone='.$row['Number'].'">'.$row['Number'].'</a></td>
+        <td><i class="text-primary fas fa-calendar-alt"></i> '.$row['Date'].'</td>
         <td><i class="text-primary fas fa-comment-alt"></i> '.nl2br($row['TextDecoded']).'</td>
       </tr>';
 }
         
 echo '
 </tbody>
-</table>';
-        
+</table>';        
 } catch (\PDOException $e) { echo "Connection failed: " . $e->getMessage();}
     break;
-
-  case "message":
+//////////////////////////////// * End view_conversation - Start message * //////////////////////////////// 
+ case "message":
 echo"
 <script>
    $(document).ready(function(){
        $('form').on('submit', function(event){
-           event.preventDefault();
-    
+           event.preventDefault();    
            var formValues= $(this).serialize();
-           var actionUrl = $(this).attr('action');
-    
+           var actionUrl = $(this).attr('action');    
            $.post(actionUrl, formValues, function(data){
-               // Display the returned data in browser
                $('#result').html(data);
            });
        });
@@ -332,7 +331,7 @@ echo '
    </div>
    <div class="form-group">
       <label class="text-primary fas fa-comment-alt" for="message"> Message:</label>
-      <textarea class="form-control" rows="5" id="message" name="message"></textarea>
+      <textarea class="form-control" rows="5" id="message" name="message">'.$_GET['message'].'</textarea>
    </div>
    <button type="submit" value="submit" class="btn btn-primary text-dark">Submit</button>
 </form>
@@ -340,8 +339,8 @@ echo '
 <div id="result">
 </div>'; 
     break;
-
-  case "send_message":
+//////////////////////////////// * End message - Start send_message * ////////////////////////////////
+ case "send_message":
 $phone = $_POST['phone']; $message = $_POST['message'];
 
 if (empty($phone))
@@ -383,11 +382,11 @@ echo '
 foreach ($data['errors'] as $value) {echo $value;}
     break;
 
-case "logout":
+ case "logout":
 unset($_SESSION['login']); header("Location: $_SERVER[PHP_SELF]");
     break;
 
-  case "outbox":
+ case "outbox":
    try {$pdo = new PDO($dsn, $user, $pass, $options);
      $outbox = $pdo->query('SELECT * FROM outbox');
 echo '  
@@ -399,6 +398,7 @@ echo '
       <th>Number</th>
       <th>Date</th>
       <th>Message</th>
+      <th data-orderable="false">Delete</th>
    </tr>
 </thead>
 <tbody>';
@@ -408,17 +408,46 @@ echo '
       <tr>
         <td><i class="text-primary fas fa-mobile-alt"></i><a href="?do=message&phone='.$row['DestinationNumber'].'">'.$row['DestinationNumber'].'</a></td>
         <td><i class="text-primary fas fa-calendar-alt"></i> '.$row['SendingDateTime'].'</td>
-        <td><i class="text-primary fas fa-comment-alt"></i> '.nl2br($row['TextDecoded']).'</td>
+        <td><a href="?do=message&message='.urlencode($row['TextDecoded']).'"><i class="text-primary fas fa-comment-alt"></i></a> '.nl2br($row['TextDecoded']).'</td>
+        <td><a href="?do=del&table=outbox&id='.$row['ID'].'" title="delete" class="delete" onclick="return confirm('."'". 'Are you sure you want to delete this message' ."'".')"><i class="text-danger far fa-trash-alt"></i></a></td>
       </tr>';
 }        
 echo '
 </tbody>
-</table>';
-        
+</table>';        
 } catch (\PDOException $e) { echo "Connection failed: " . $e->getMessage();}
     break;
+//////////////////////////////// * End send_message - Start log * ////////////////////////////////
+ case "log":
+echo '
+<h2><i class="text-primary fas fa-sms"></i> SMSD Log</h2>
+<p class="text-secondary">SMSD Log</p>
+   <div class="form-group">
+      <textarea class="form-control" rows="20" id="message" name="message">'; 
 
+$file = file($log) or print("Unable to open log file!");
+for ($i = max(0, count($file)-$max_log_lines); $i < count($file); $i++) {
+  echo $file[$i];
+}
+echo '</textarea>
+   </div>'; 
+    break;
 
+  case "del":
+   try {$pdo = new PDO($dsn, $user, $pass, $options);
+                
+        $id = $_GET['id'];
+        $table = $_GET['table'];
+        
+        $stmt = $pdo->prepare( "DELETE FROM $table WHERE id =:id" );
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        if( ! $stmt->rowCount() ) {
+        echo "<script> alert('Delete Failed'); window.history.back(); </script>";
+        } else {echo "<script>window.history.back(); </script>";}         
+} catch (\PDOException $e) { echo "Delete failed: " . $e->getMessage();}
+    break;
+//////////////////////////////// * End log - Start default * ////////////////////////////////
 default:
     echo '
 <h2 class="mb-sm-5"><i class="text-primary fas fa-sms"></i> '.$title.'</h2>
@@ -440,15 +469,13 @@ default:
       <h5 class="mb-1">Conversations</h5>
     </div>
     <p class="mb-1">Query join of the database "inbox" and "senditens" tables to display list of available conversations</p>
-  </a>
-  
+  </a>  
     <a href="?do=outbox" class="list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">Out Box</h5>
     </div>
     <p class="mb-1">Displays list of OutBox (Queued For Delivery) SMS. From the database "outbox" table.</p>
-  </a>
-  
+  </a>  
   <a href="?do=message" class="list-group-item list-group-item-action flex-column align-items-start">
     <div class="d-flex w-100 justify-content-between">
       <h5 class="mb-1">Send SMS</h5>
@@ -461,16 +488,21 @@ default:
     </div>
     <p class="mb-1">Send sms from command line. Example: http://localhost/?do=api&token=your_token&phone=to_phone&message=your_message</p>
   </a>
+  <a href="?do=log" class="list-group-item list-group-item-action flex-column align-items-start">
+    <div class="d-flex w-100 justify-content-between">
+      <h5 class="mb-1">Log</h5>
+    </div>
+    <p class="mb-1">Displays the smsd log file</p>
+  </a>
 </div>';
   }
+//////////////////////////////// * End default * ////////////////////////////////
+
 }
-
 else if (isset($_POST['submit'])) {
-
 	if ($_POST['username'] == $username && $_POST['password'] == $password){
 		$_SESSION["login"] = $hash;
-		header("Location: $_SERVER[PHP_SELF]");
-		
+		header("Location: $_SERVER[PHP_SELF]");		
 } else { display_login_form();
 		echo '
   </br>      
@@ -482,19 +514,16 @@ else if (isset($_POST['submit'])) {
 	}
 } else { display_login_form(); }
 
-if (!in_array($do, $exclude)) {
+if (!in_array($do, $exclude_html)) {
 
 echo'
 </div>
-
   <footer class="footer fixed-bottom py-4 bg-dark text-white">
-    <div class="container text-center">
+    <div class="container text-center text-primary">
       <small>'.$footer.'</small>
     </div>
   </footer>
   </body>
 </html>';
 }
-
 ?>
-
