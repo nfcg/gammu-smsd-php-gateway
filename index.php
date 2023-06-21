@@ -23,7 +23,7 @@ $title = 'Gammu SMS Gateway';
 $footer = 'Copyright © Gammu SMS Gateway'; 
 //////////////////////////////// * End Conf * ////////////////////////////////
 
-
+setlocale(LC_CTYPE, "UTF8", "en_US.UTF-8");
 
 $do = $_GET['do'];
 
