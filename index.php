@@ -1,5 +1,6 @@
 <?php
 //////////////////////////////// * Start Conf * ////////////////////////////////
+$host    = 'localhost';
 $db      = 'smsd';
 $user    = 'smsd';
 $pass    = 'your_password'; // Please Change This
@@ -9,6 +10,8 @@ $username = 'admin';
 $password = 'admin'; // Please Change This
 
 $your_number = '+351000000000'; // Please Change This
+
+$gammu_config_file = '/etc/.gammurc'; // Please Change This
 
 $get_text = 'textutf8'; // text or textutf8
 
@@ -42,7 +45,7 @@ $phone = urlencode($phone);
 
 $message = escapeshellarg($_GET['message']);
 
-$send = shell_exec("gammu-smsd-inject TEXT $phone -unicode -$get_text $message").PHP_EOL;
+$send = shell_exec("gammu-smsd-inject -c $gammu_config_file TEXT $phone -unicode -$get_text $message").PHP_EOL;
 echo json_encode($send); exit();
 
 } else { echo json_encode("Not Allowed"); exit();}
@@ -368,7 +371,7 @@ if ( ! empty($errors)) {
 } else {
 $phone = filter_var($phone, FILTER_SANITIZE_NUMBER_INT); $message = escapeshellarg($message);
 
-$send = shell_exec("gammu-smsd-inject TEXT $phone -unicode -$get_text $message").PHP_EOL;
+$send = shell_exec("gammu-smsd-inject -c $gammu_config_file TEXT $phone -unicode -$get_text $message").PHP_EOL;
 echo '
 </br>
 <div class="alert alert-success alert-dismissible fade show" role="alert">'
